@@ -54,7 +54,7 @@ def find_gender(gender_string: str):
       return'Sonder'
 
 cups_from_db = []
-no_cups_found_counter = 0
+webpage_not_found = 0
 driver2x2 = createDriver()
 driver4x4 = createDriver()
 messageBot = MessageBot()
@@ -70,7 +70,7 @@ def main():
 
 
 def iterateOverSoup(soup: list):
-  global no_cups_found_counter
+  global webpage_not_found
   try:
     cups_found = []
     for cup_html in soup:
@@ -88,7 +88,7 @@ def iterateOverSoup(soup: list):
       cups_found.append(Cup(gender_string, date, category, name, players, link, inform))
 
     if len(cups_found) > 0:
-      no_cups_found_counter = 0
+      webpage_not_found = 0
 
     return cups_found
 
@@ -104,10 +104,12 @@ def tempSaveDbCups(db_cups: CursorResult):
                    row['name'], row['players'], row['link'], row['inform']))
 
 def getSoup():
-  global no_cups_found_counter
+  global webpage_not_found
   
-  if no_cups_found_counter > 10:
-      print('Send error-message here!')
+  if webpage_not_found > 10:
+      print('Could not find webpage for the 10 attempt!')
+      time.sleep(172800)
+      messageBot.sendPrivateMessage("The Bot could not reach the webpage beachvolleyball.nrw after the tenth attempt!")
 
   try:
     driver2x2.get('https://www.beachvolleyball.nrw/?series=&tournamentsPage=1&tournamentsLimit=800')
@@ -121,7 +123,7 @@ def getSoup():
   except Exception as e:
     print("Was not able to to retrieve Webpage, will try again in 5 Minutes.")
     print(e)
-    no_cups_found_counter +=  1
+    webpage_not_found +=  1
     time.sleep(300)
 
   soup2x2 = BeautifulSoup(driver2x2.page_source, 'lxml').find_all(

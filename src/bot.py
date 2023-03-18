@@ -9,9 +9,11 @@ class MessageBot:
   logging.getLogger("apscheduler").setLevel(logging.WARNING)
 
   internal_id = ""
-  
+  phone_number = ""
+
   def __init__(self):
     global internal_id
+    global phone_number
     load_dotenv()
     signal_service = os.environ["SIGNAL_SERVICE"]
     phone_number = os.environ["PHONE_NUMBER"]
@@ -25,6 +27,8 @@ class MessageBot:
     self.bot = SignalBot(config)
     self.bot.listenGroup(group_id, internal_id)
 
-  def sendMessage(self, string: str):  
-    print('In Send MESSAGE!!!')
+  def sendMessage(self, string: str):
     asyncio.run(self.bot.send(internal_id, string))
+
+  def sendPrivateMessage(self, string: str):
+    asyncio.run(self.bot.send(phone_number, string))

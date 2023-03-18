@@ -5,7 +5,7 @@ from sqlalchemy import create_engine
 
 metaData = MetaData()
 
-engine = create_engine('sqlite:///cups.db', echo=True)
+engine = create_engine('sqlite:///cups.db', echo=False)
 
 db_cups = Table('cups', metaData,
                 Column('id', String, primary_key=True),
@@ -42,13 +42,13 @@ def getCupsFromDb():
     return cups
 
 
-def insertCupToDb(html_cup):
-    insert = db_cups.insert().values(id=html_cup.id, gender=html_cup.gender, date=html_cup.date,
-                                          category=html_cup.category, name=html_cup.name, players=html_cup.players,
-                                          link=html_cup.link, inform=html_cup.inform)
+def insertCupToDb(html_cup): 
     try:
         c = engine.connect()
-        c.execute(insert)
+        c.execute(db_cups.insert().values(id=html_cup.id, gender=html_cup.gender, date=html_cup.date,
+                                          category=html_cup.category, name=html_cup.name, players=html_cup.players,
+                                          link=html_cup.link, inform=html_cup.inform))
+        c.commit()
         c.close()
     except Exception as e:
         print()
