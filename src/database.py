@@ -5,7 +5,7 @@ from sqlalchemy import create_engine
 
 metaData = MetaData()
 
-engine = create_engine('sqlite:///db/cups.db', echo=True)
+engine = create_engine('sqlite:///cups.db', echo=True)
 
 db_cups = Table('cups', metaData,
                 Column('id', String, primary_key=True),
@@ -21,20 +21,38 @@ db_cups = Table('cups', metaData,
 
 def setUp():
     # Check if Database is available
-    if os.path.exists("db/cups.db"):
+    if os.path.exists("cups.db"):
         print("Database was already created!")
-        return
+    else:
+        # Create Database and connect via
+        sqlite3.connect("cups.db")
 
-    # Create Database and connect via
-    sqlite3.connect("db/cups.db")
-
-    # creates the Tables in the SQLite DB
-    metaData.create_all(engine)
-
-
-def getUserTable():
-    return db_cups
+        # creates the Tables in the SQLite DB
+        metaData.create_all(engine)
 
 
-def getDbConnection():
-    return engine
+def getCupsFromDb():
+    try:
+        c = engine.connect()
+        cups =  c.execute(db_cups.select())
+        c.close()
+    except Exception as e:
+        print("Tryining to get Cups From DB...")
+        print(e)
+    return cups
+
+
+def insertCupToDb(html_cup):
+    insert = db_cups.insert().values(id=html_cup.id, gender=html_cup.gender, date=html_cup.date,
+                                          category=html_cup.category, name=html_cup.name, players=html_cup.players,
+                                          link=html_cup.link, inform=html_cup.inform)
+    try:
+        c = engine.connect()
+        c.execute(insert)
+        c.close()
+    except Exception as e:
+        print()
+        print(e)
+        print(html_cup)
+        print()
+    
