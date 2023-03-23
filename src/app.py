@@ -3,7 +3,6 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from bs4 import BeautifulSoup
-from sqlalchemy import CursorResult
 from cup import Cup
 import database as db
 import time
@@ -76,10 +75,10 @@ def iterateOverSoup(soup: list):
     for cup_html in soup:
       inform = 1
       cup_name = cup_html['class'][0]
-      start = 'series='
+      start = 'series-'
       gender_string = find_gender(cup_name.replace(start, ''))
       date = cup_html.find('td', class_="date").get_text()
-      category = cup_html.find('span', class_="category-shorthandle").get_text()
+      category = cup_html['class'][1].replace("category-", '').upper()
       name = cup_html.find('a').get_text()
       players = cup_html.find('td', class_="players").get_text()
       
@@ -97,11 +96,11 @@ def iterateOverSoup(soup: list):
     print('Cup that caused the IndexError: \n', cup_html.prettify())
     return []
 
-def tempSaveDbCups(db_cups: CursorResult):
+def tempSaveDbCups(db_cups):
   global cups_from_db
   for row in db_cups:
-    cups_from_db.append(Cup(row['gender'], row['date'], row['category'],
-                   row['name'], row['players'], row['link'], row['inform']))
+    cups_from_db.append(Cup(row[1], row[2], row[3],
+                   row[4], row[5], row[6], row[7]))
 
 def getSoup():
   global webpage_not_found

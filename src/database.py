@@ -39,7 +39,7 @@ def getCupsFromDb():
     except Exception as e:
         print("Tryining to get Cups From DB...")
         print(e)
-    return cups
+    return cups.all()
 
 
 def insertCupToDb(html_cup): 
