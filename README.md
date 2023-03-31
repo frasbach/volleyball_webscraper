@@ -37,12 +37,31 @@ curl -X GET 'http://127.0.0.1:8080/v1/groups/+491794298507' | python -m json.too
 
 Download fitting chromedriver executable!
 
-## Database
+
+## Create Service
+1. 
 ```bash
-sudo apt-get install sqlite3
+sudo vim /lib/systemd/system/<service-name>.service
+[Unit]
+Description=WebScraper for tournements on beachvolleyball.nrw
+After=multi-user.target
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/dev/volleyball-webscraper
+ExecStart=/home/pi/dev/volleyball-webscraper/venv/bin/python3.11  /home/pi/dev/volleyball-webscraper/src/app.py
+Restart=allways
+
+[Install]
+WantedBy=multi-user.target
 ```
 
 ## Commands
+
 ```bash
-ps -ef | grep python
+ps -ef | grep python                                # Show python instances
+systemctl list-units                                # Show all system services
+sudo systemctl status volleyball-tracker.service    # For Service Status
+sudo systemctl restart volleyball-tracker.service   # Restart service
 ```
