@@ -15,7 +15,7 @@ docker run -p 8080:8080 \
 
 3. 
 ```bash
-docker run -p 8080:8080 \
+docker run -d -p 8080:8080 --restart unless-stoppe \
     -v $(PWD)/signal-cli-config:/home/.local/share/signal-cli \
     -e 'MODE=json-rpc' bbernhard/signal-cli-rest-api:0.64
 ```
@@ -45,8 +45,10 @@ sudo vim /lib/systemd/system/<service-name>.service
 [Unit]
 Description=WebScraper for tournements on beachvolleyball.nrw
 After=multi-user.target
+StartLimitIntervalSec=120
 
 [Service]
+StartLimitBurst=20
 Type=simple
 User=pi
 WorkingDirectory=/home/pi/dev/volleyball-webscraper
